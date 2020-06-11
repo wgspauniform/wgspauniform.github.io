@@ -1,17 +1,82 @@
 <html>
 <head>
 <script>
-function doData(data) {
-  alert(JSON.stringify(data));
+var inventory, prices;
+function unpackSpreadSheetData(sheet) {
+  var cells = {};
+  var headers = [];
+  var data = [];
+  for (var e in sheet.feed.entry) {
+    var entry = sheet.feed.entry[e];
+    var cellRef = entry.title["$t"];
+    var cellValue = entry.content["$t"];
+    var row = entry["gs$cell"].row;
+    var col = entry["gs$cell"].col;
+
+    var rowArray;
+    if (row == 1) {
+      rowArray = headers;
+    }
+    else {
+      while (data.length < row-1) {
+        data.push([]);
+      }
+      rowArray = data[row-2];
+    }
+
+    while (rowArray.length < col) {
+      rowArray.push(null);
+    }
+    rowArray[col-1] = cellValue;
+  }
+
+  return {
+    "headers": headers,
+    "data": data
+  }
 }
-function doPrices(prices) {
-  alert(JSON.stringify(prices));
+function inventoryLoaded(inventorySheet) {
+  inventory = unpackSpreadSheetData(inventorySheet);
+  if (prices != null) {
+    allDataLoaded();
+  }
+}
+function pricesLoaded(pricesSheet) {
+  priceData = unpackSpreadSheetData(pricesSheet);
+  prices = {}
+  for (var r=0; r<priceData.data.length; r++) {
+    var row = priceData.data[r];
+    prices[row[0]] = row[1];
+  }
+  if (inventory != null) {
+    allDataLoaded();
+  }
+}
+function allDataLoaded() {
+  var html = "<table><tr><th>Ref</th><th>Type</th><th>Size</th><th>Condition</th><th>Cost</th></tr>";
+  for (var r=0; r<inventory.data.length; r++) {
+    var row = inventory.data[r];
+    var ref = row[0];
+    var added = row[1];
+    var itemType = row[2];
+    var size = row[3];
+    var condition = row[4];
+    var images = row[5];
+    var available = row[6];
+    var price = prices[itemType];
+    
+    if (available == "Y") {
+      html += "<tr><td>"+ref+"</td><td>"+itemType+"</td><td>"+size+"</td><td>"+condition+"</td><td>£"+price+"</td></tr>"
+    }
+  }
+  html += "</table>";
+  document.getElementById("inventory").innerHTML = html;
 }
 </script>
-<script type="application/javascript" src="https://spreadsheets.google.com/feeds/cells/15rSlJm9ZhF7M8u1M-w1x67xatGpl34Bq5K_aaW_7stI/1/public/full?alt=json-in-script&callback=doData"/>
-<script type="application/javascript" src="https://spreadsheets.google.com/feeds/cells/1rDKSe5_8Um0kief4wKK77yOSAY9cWdz1XlxAah7IWEg/1/public/full?alt=json-in-script&callback=doData"/>
 </head>
 <body>
 <p id="inventory"/>
+<script type="application/javascript" src="https://spreadsheets.google.com/feeds/cells/15rSlJm9ZhF7M8u1M-w1x67xatGpl34Bq5K_aaW_7stI/1/public/full?alt=json-in-script&callback=inventoryLoaded"></script>
+<script type="application/javascript" src="https://spreadsheets.google.com/feeds/cells/1rDKSe5_8Um0kief4wKK77yOSAY9cWdz1XlxAah7IWEg/1/public/full?alt=json-in-script&callback=pricesLoaded"></script>
 </body>
 </html>
