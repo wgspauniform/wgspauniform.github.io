@@ -1,0 +1,17 @@
+<html>
+<head>
+<script>
+function doData(data) {
+  alert(JSON.stringify(data));
+}
+function doPrices(prices) {
+  alert(JSON.stringify(prices));
+}
+</script>
+<script type="application/javascript" src="https://spreadsheets.google.com/feeds/cells/15rSlJm9ZhF7M8u1M-w1x67xatGpl34Bq5K_aaW_7stI/1/public/full?alt=json-in-script&callback=doData"/>
+<script type="application/javascript" src="https://spreadsheets.google.com/feeds/cells/1rDKSe5_8Um0kief4wKK77yOSAY9cWdz1XlxAah7IWEg/1/public/full?alt=json-in-script&callback=doData"/>
+</head>
+<body>
+<p id="inventory"/>
+</body>
+</html>
