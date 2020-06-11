@@ -52,31 +52,59 @@ function pricesLoaded(pricesSheet) {
     allDataLoaded();
   }
 }
+var allItemRefs = [];
 function allDataLoaded() {
-  var html = "<table><tr><th>Ref</th><th>Type</th><th>Size</th><th>Condition</th><th>Cost</th></tr>";
+  var html = "<table><tr><th></th><th>Ref</th><th>Type</th><th>Size</th><th>Condition</th><th>Cost</th><th>Images</th></tr>";
   for (var r=0; r<inventory.data.length; r++) {
     var row = inventory.data[r];
     var ref = row[0];
+    allItemRefs.push(ref);
     var added = row[1];
     var itemType = row[2];
     var size = row[3];
     var condition = row[4];
-    var images = row[5];
+    var images = row[5] == null ? [] : row[5].split("\n");
     var available = row[6];
     var price = prices[itemType];
     
     if (available == "Y") {
-      html += "<tr><td>"+ref+"</td><td>"+itemType+"</td><td>"+size+"</td><td>"+condition+"</td><td>£"+price+"</td></tr>"
+      html += "<tr><td><input id='"+ref+"' type='checkbox' name='ref' value='"+ref+"'/></td><td>"+ref+"</td><td>"+itemType+"</td><td>"+size+"</td><td>"+condition+"</td><td>£"+price+"</td><td>"
+      if (images.length == 0) {
+        html += "N/A";
+      }
+      else {
+        var sep = "";
+        for (var i in images) {
+          var img = images[i];
+          html += sep + "<a href='" + img + "' target='_blank'>Image "+(i+1)+"</a>";
+          sep = "<br/>";
+        }
+      }
+      html += "</td></tr>";
     }
   }
   html += "</table>";
   document.getElementById("inventory").innerHTML = html;
 }
+function processForm() {
+  var selectedRefs = [];
+  for (var r in allItemRefs) {
+    var ref = allItemRefs[r];
+    var input = document.getElementById(ref);
+    if (input.checked) {
+      selectedRefs.push(ref);
+    }
+  }
+  alert("You selected: "+JSON.stringify(selectedRefs));
+}
 </script>
 </head>
 <body>
+<form> 
 <p id="inventory"/>
 <script type="application/javascript" src="https://spreadsheets.google.com/feeds/cells/15rSlJm9ZhF7M8u1M-w1x67xatGpl34Bq5K_aaW_7stI/1/public/full?alt=json-in-script&callback=inventoryLoaded"></script>
 <script type="application/javascript" src="https://spreadsheets.google.com/feeds/cells/1rDKSe5_8Um0kief4wKK77yOSAY9cWdz1XlxAah7IWEg/1/public/full?alt=json-in-script&callback=pricesLoaded"></script>
+<input type="reset"/><input type="button" onclick="processForm()" value="Order Selected Items"/>
+</form>
 </body>
 </html>
