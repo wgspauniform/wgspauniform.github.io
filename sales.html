@@ -157,7 +157,19 @@ function updateSelectedItems() {
 function processForm() {
   var selectedRefs = getSelectedRefs();
   var refString = selectedRefs.join(",");
+
+  // strip out the items we just selected
+  for (var i=allItemRefs.length-1; i>=0; i--) {
+    var ref = allItemRefs[i];
+    if (selectedRefs.indexOf(ref) >= 0) {
+      allItemRefs.splice(i, 1);
+    }
+  }
+  generateTable("inventory", "inventoryTable", allItemRefs, true, true, false);
+  updateSelectedItems();
+
   alert("You selected "+selectedRefs.length+" items. You will now be redirected to a form to fill in your details to complete your request, please note items are not reserved until you receive a confirmation email after submitting this form.");
+
   document.location.href="https://docs.google.com/forms/d/e/1FAIpQLSf8rxC1D2jaaqWSF_BNDygUYdJ2pGLu1BZfMnoYrxDH0LisTQ/viewform?usp=pp_url&entry.1615962876="+refString;
 }
 </script>
