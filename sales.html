@@ -1,6 +1,20 @@
 <html>
 <head>
 <link rel="stylesheet" href="sortable-theme-light.css" />
+<style>
+  .cb { width:30px; height:30px; }
+  .rst { 
+    padding: 10px;
+    font-size: 20px;
+    text-align: center;
+  }
+  .submit { 
+    padding: 10px;
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+  }
+</style>
 <script src="sortable.min.js"></script>
 <script>
 var inventory, prices;
@@ -82,7 +96,7 @@ function generateTable(targetId, tableId, refs, checkboxes, sortable, total) {
       if (available == "Y") {
         html += "<tr>";
         if (checkboxes) {
-          html += "<td><input id='"+ref+"' type='checkbox' name='ref' value='"+ref+"' onclick='updateSelectedItems()'/></td>";
+          html += "<td><input id='"+ref+"' type='checkbox' class='cb' name='ref' value='"+ref+"' onclick='updateSelectedItems()'/></td>";
         }
         html += "<td>"+ref+"</td><td>"+itemType+"</td><td>"+size+"</td><td>"+condition+"</td><td data-value='"+price+"'>£"+price+"</td><td>"
         if (images.length == 0) {
@@ -149,7 +163,13 @@ function processForm() {
 </script>
 </head>
 <body>
-  <form> 
+  <form>
+    <p>
+      Select the items you would like to order using the checkboxes on the left, and then click one of the buttons to submit.
+    </p> 
+    <p id="buttons0">
+      <input type="reset" class="rst"/><input type="button"  class="submit" onclick="processForm()" value="Order Selected Items"/>
+    </p>
     <p>
       <h2>Available inventory</h2>
       <br/>
@@ -159,7 +179,7 @@ function processForm() {
       Loading inventory...
     </p>
     <p id="buttons1">
-      <input type="reset"/><input type="button" onclick="processForm()" value="Order Selected Items"/>
+      <input type="reset" class="rst"/><input type="button"  class="submit" onclick="processForm()" value="Order Selected Items"/>
     </p>
     <p>
       <h2>Selected items</h2>
@@ -170,7 +190,7 @@ function processForm() {
     <script type="application/javascript" src="https://spreadsheets.google.com/feeds/cells/15rSlJm9ZhF7M8u1M-w1x67xatGpl34Bq5K_aaW_7stI/1/public/full?alt=json-in-script&callback=inventoryLoaded"></script>
     <script type="application/javascript" src="https://spreadsheets.google.com/feeds/cells/1rDKSe5_8Um0kief4wKK77yOSAY9cWdz1XlxAah7IWEg/1/public/full?alt=json-in-script&callback=pricesLoaded"></script>
     <p id="buttons2">
-      <input type="reset"/><input type="button" onclick="processForm()" value="Order Selected Items"/>
+      <input type="reset" class="rst"/><input type="button"  class="submit" onclick="processForm()" value="Order Selected Items"/>
     </p>
   </form>
 </body>
