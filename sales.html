@@ -1,12 +1,210 @@
 <html>
 <head>
-<title>WGSPA Second Hand Uniform</title>
+<link rel="stylesheet" href="sortable-theme-light.css" />
+<style>
+  .cb { width:30px; height:30px; }
+  .rst { 
+    padding: 10px;
+    font-size: 20px;
+    text-align: center;
+  }
+  .submit { 
+    padding: 10px;
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+  }
+</style>
+<script src="sortable.min.js"></script>
+<script>
+var inventory, prices;
+function unpackSpreadSheetData(sheet) {
+  var cells = {};
+  var headers = [];
+  var data = [];
+  for (var e in sheet.feed.entry) {
+    var entry = sheet.feed.entry[e];
+    var cellRef = entry.title["$t"];
+    var cellValue = entry.content["$t"];
+    var row = entry["gs$cell"].row;
+    var col = entry["gs$cell"].col;
+
+    var rowArray;
+    if (row == 1) {
+      rowArray = headers;
+    }
+    else {
+      while (data.length < row-1) {
+        data.push([]);
+      }
+      rowArray = data[row-2];
+    }
+
+    while (rowArray.length < col) {
+      rowArray.push(null);
+    }
+    rowArray[col-1] = cellValue;
+  }
+
+  return {
+    "headers": headers,
+    "data": data
+  }
+}
+function inventoryLoaded(inventorySheet) {
+  inventory = unpackSpreadSheetData(inventorySheet);
+  if (prices != null) {
+    allDataLoaded();
+  }
+}
+function pricesLoaded(pricesSheet) {
+  priceData = unpackSpreadSheetData(pricesSheet);
+  prices = {}
+  for (var r=0; r<priceData.data.length; r++) {
+    var row = priceData.data[r];
+    prices[row[0]] = row[1];
+  }
+  if (inventory != null) {
+    allDataLoaded();
+  }
+}
+var allItemRefs = [];
+function generateTable(targetId, tableId, refs, checkboxes, sortable, total) {
+  var includedRefs = {};
+  for (var r=0; r<refs.length; r++) {
+    includedRefs[refs[r]] = true;
+  }
+  var html = "<table id='"+tableId+"' class='sortable-theme-light' data-sortable='"+sortable+"'><thead><tr>";
+  if (checkboxes) {
+    html += "<th data-sortable='false'></th>";
+  }
+  html += "<th>Ref</th><th>Type</th><th>Size</th><th>Condition</th><th>Cost</th><th data-sortable='false'>Images</th></tr></thead><tbody>";
+  var runningTotal = 0;
+  for (var r=0; r<inventory.data.length; r++) {
+    var row = inventory.data[r];
+    var ref = row[0];
+    if (includedRefs[ref]) {
+      var added = row[1];
+      var itemType = row[2];
+      var size = row[3];
+      var condition = row[4];
+      var images = row[5] == null ? [] : row[5].split("\n");
+      var available = row[6];
+      var price = prices[itemType];
+      runningTotal += Number(price);
+      
+      if (available == "Y") {
+        html += "<tr>";
+        if (checkboxes) {
+          html += "<td><input id='"+ref+"' type='checkbox' class='cb' name='ref' value='"+ref+"' onclick='updateSelectedItems()'/></td>";
+        }
+        html += "<td>"+ref+"</td><td>"+itemType+"</td><td>"+size+"</td><td>"+condition+"</td><td data-value='"+price+"'>£"+price+"</td><td>"
+        if (images.length == 0) {
+          html += "N/A";
+        }
+        else {
+          var sep = "";
+          for (var i in images) {
+            var img = images[i];
+            html += sep + "<a href='" + img + "' target='_blank'>Image "+(i+1)+"</a>";
+            sep = "<br/>";
+          }
+        }
+        html += "</td></tr>";
+      }
+    }
+  }
+  if (total) {
+    html += "<tr>";
+    if (checkboxes) {
+      html += "<td></td>";
+    }
+    html += "<td></td><td></td><td></td><td><b>Total</b></td><td>£"+runningTotal+"</td><td></td></tr>";
+  }
+  html += "</tbody></table>";
+  document.getElementById(targetId).innerHTML = html;
+  if (sortable) {
+    var table = document.querySelector('#'+tableId);
+    Sortable.initTable(table);
+  }
+}
+
+function allDataLoaded() {
+  for (var r=0; r<inventory.data.length; r++) {
+    var row = inventory.data[r];
+    var ref = row[0];
+    allItemRefs.push(ref);
+  }
+  generateTable("inventory", "inventoryTable", allItemRefs, true, true, false);
+  updateSelectedItems();
+}
+function getSelectedRefs() {
+  var selectedRefs = [];
+  for (var r in allItemRefs) {
+    var ref = allItemRefs[r];
+    var input = document.getElementById(ref);
+    if (input != null && input.checked) {
+      selectedRefs.push(ref);
+    }
+  }
+  return selectedRefs;
+}
+function updateSelectedItems() {
+  var selectedRefs = getSelectedRefs();
+  generateTable("selected", "selectedTable", selectedRefs, false, false, true);
+   
+}
+function processForm() {
+  var selectedRefs = getSelectedRefs();
+  var refString = selectedRefs.join(",");
+
+  // strip out the items we just selected
+  for (var i=allItemRefs.length-1; i>=0; i--) {
+    var ref = allItemRefs[i];
+    if (selectedRefs.indexOf(ref) >= 0) {
+      allItemRefs.splice(i, 1);
+    }
+  }
+  generateTable("inventory", "inventoryTable", allItemRefs, true, true, false);
+  updateSelectedItems();
+
+  alert("You selected "+selectedRefs.length+" items. You will now be redirected to a form to fill in your details to complete your request, please note items are not reserved until you receive a confirmation email after submitting this form.");
+
+  document.location.href="https://docs.google.com/forms/d/e/1FAIpQLSf8rxC1D2jaaqWSF_BNDygUYdJ2pGLu1BZfMnoYrxDH0LisTQ/viewform?usp=pp_url&entry.1615962876="+refString;
+}
+</script>
 </head>
 <body>
-  <p>
-    <h2>Sale closed</h2>
-    <br/>
-    Sale of second hand uniform is now closed.
-  </p>
+  <form>
+    <p>
+      Click the columns to sort.
+      Select the items you would like to order using the checkboxes on the left, and then click one of the buttons to submit.
+    </p> 
+    <p id="buttons0">
+      <input type="reset" class="rst"/><input type="button"  class="submit" onclick="processForm()" value="Order Selected Items"/>
+    </p>
+    <p>
+      <h2>Available inventory</h2>
+      <br/>
+      Select the items you wish to purchase in the list below by ticking the checkboxes. Table columns are sortable by clicking on the headers.
+    </p>
+    <p id="inventory">
+      Loading inventory...
+    </p>
+    <p id="buttons1">
+      <input type="reset" class="rst"/><input type="button"  class="submit" onclick="processForm()" value="Order Selected Items"/>
+    </p>
+    <p>
+      <h2>Selected items</h2>
+      <br/>
+      Click "Order Selected Items" to continue.
+    </p>
+    <p id="selected"/>
+    <script type="application/javascript" src="https://spreadsheets.google.com/feeds/cells/15rSlJm9ZhF7M8u1M-w1x67xatGpl34Bq5K_aaW_7stI/1/public/full?alt=json-in-script&callback=inventoryLoaded"></script>
+    <script type="application/javascript" src="https://spreadsheets.google.com/feeds/cells/1rDKSe5_8Um0kief4wKK77yOSAY9cWdz1XlxAah7IWEg/1/public/full?alt=json-in-script&callback=pricesLoaded"></script>
+    <p id="buttons2">
+      <input type="reset" class="rst"/><input type="button"  class="submit" onclick="processForm()" value="Order Selected Items"/>
+    </p>
+  </form>
 </body>
 </html>
