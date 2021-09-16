@@ -18,47 +18,14 @@
 <script src="sortable.min.js"></script>
 <script>
 var inventory, prices;
-function unpackSpreadSheetData(sheet) {
-  var cells = {};
-  var headers = [];
-  var data = [];
-  for (var e in sheet.feed.entry) {
-    var entry = sheet.feed.entry[e];
-    var cellRef = entry.title["$t"];
-    var cellValue = entry.content["$t"];
-    var row = entry["gs$cell"].row;
-    var col = entry["gs$cell"].col;
-
-    var rowArray;
-    if (row == 1) {
-      rowArray = headers;
-    }
-    else {
-      while (data.length < row-1) {
-        data.push([]);
-      }
-      rowArray = data[row-2];
-    }
-
-    while (rowArray.length < col) {
-      rowArray.push(null);
-    }
-    rowArray[col-1] = cellValue;
-  }
-
-  return {
-    "headers": headers,
-    "data": data
-  }
-}
 function inventoryLoaded(inventorySheet) {
-  inventory = unpackSpreadSheetData(inventorySheet);
+  inventory = inventorySheet;
   if (prices != null) {
     allDataLoaded();
   }
 }
 function pricesLoaded(pricesSheet) {
-  priceData = unpackSpreadSheetData(pricesSheet);
+  priceData = pricesSheet;
   prices = {}
   for (var r=0; r<priceData.data.length; r++) {
     var row = priceData.data[r];
@@ -200,8 +167,8 @@ function processForm() {
       Click "Order Selected Items" to continue.
     </p>
     <p id="selected"/>
-    <script type="application/javascript" src="https://spreadsheets.google.com/feeds/cells/15rSlJm9ZhF7M8u1M-w1x67xatGpl34Bq5K_aaW_7stI/1/public/full?alt=json-in-script&callback=inventoryLoaded"></script>
-    <script type="application/javascript" src="https://spreadsheets.google.com/feeds/cells/1rDKSe5_8Um0kief4wKK77yOSAY9cWdz1XlxAah7IWEg/1/public/full?alt=json-in-script&callback=pricesLoaded"></script>
+    <script type="application/javascript" src="https://europe-west2-wgspa-uniform-sales.cloudfunctions.net/getAvailableUniform?callback=inventoryLoaded"></script>
+    <script type="application/javascript" src="https://europe-west2-wgspa-uniform-sales.cloudfunctions.net/getUniformPrices?callback=pricesLoaded"></script>
     <p id="buttons2">
       <input type="reset" class="rst"/><input type="button"  class="submit" onclick="processForm()" value="Order Selected Items"/>
     </p>
