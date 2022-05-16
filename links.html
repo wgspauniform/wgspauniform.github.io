@@ -1,6 +1,29 @@
 <html>
-<head><title>Useful links</title></head>
-<body>
+<head>
+  <title>Useful links</title>
+  <script>
+    function copyableText(spanId, text) {
+      var span = document.getElementById(spanId);
+      span.innerHtml = text + " (<a onclick=\"copyText('"+text+"')\">Copy</a>)";
+    }
+    function copyText(text) {
+      navigator.clipboard.writeText(text);
+    }
+    function init() {
+      copyableText("openSalesSectionTitle", "Uniform Sale");
+      copyableText("openSalesSectionDescription", "Please enter the required information and we will email you with instructions for payment and collection.");
+      /*
+      copyableText("closeSalesSectionTitle", "");
+      copyableText("closeSalesSectionDescription", "");
+      copyableText("openUploadsSectionTitle", "");
+      copyableText("openUploadsSectionDescription", "");
+      copyableText("closeUploadsSectionTitle", "");
+      copyableText("closeUploadsSectionDescription", "");
+      */
+    }
+  </script>
+</head>
+<body onload="init()">
 <h2>Useful links</h2>
 <ul>
 <li>Add existing stock form: <a href="https://tinyurl.com/wgs-pa-add-shu">https://tinyurl.com/wgs-pa-add-shu</a> (<a href="https://docs.google.com/forms/d/1hwciEDHf3s2UYl34vDhDsPPeVLHQmH7XiQ8hWoi3mRI/edit">Edit form</a>)</li>
@@ -28,7 +51,7 @@
       <ol>
         <li>Go to <a href="https://docs.google.com/forms/d/1DBA_6RZH7WwNoQI5FHu8G9lzAnZht568psRsdX6muZg/edit">edit sales form</a></li>
         <li>Delete the first section, which should have title "Uniform Sales are now closed".</li>
-        <li>Ensure the title of the remaining section is "Uniform Sale" and the description is "Please enter the required information and we will email you with instructions for payment and collection."</li>
+        <li>Ensure the title of the remaining section is "<span id="openSalesSectionTitle"></span>" and the description is "<span id="openSalesSectionDescription"></span>"</li>
       </ol>
     </li>
     <li>
