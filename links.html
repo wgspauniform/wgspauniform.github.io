@@ -4,7 +4,7 @@
   <script>
     function copyableText(spanId, text) {
       var span = document.getElementById(spanId);
-      span.innerHtml = text + " (<a onclick=\"copyText('"+text+"')\">Copy</a>)";
+      span.innerHTML = text + " (<a onclick=\"copyText('"+text+"')\">Copy</a>)";
     }
     function copyText(text) {
       navigator.clipboard.writeText(text);
@@ -12,14 +12,12 @@
     function init() {
       copyableText("openSalesSectionTitle", "Uniform Sale");
       copyableText("openSalesSectionDescription", "Please enter the required information and we will email you with instructions for payment and collection.");
-      /*
-      copyableText("closeSalesSectionTitle", "");
-      copyableText("closeSalesSectionDescription", "");
-      copyableText("openUploadsSectionTitle", "");
-      copyableText("openUploadsSectionDescription", "");
-      copyableText("closeUploadsSectionTitle", "");
-      copyableText("closeUploadsSectionDescription", "");
-      */
+      copyableText("closeSalesSectionTitle", "Uniform Sales are now closed");
+      copyableText("closeSalesSectionDescription", "Please look out for announcements via class reps for future sales. Submitting this form will have no effect.");
+      copyableText("openUploadsSectionTitle", "Add New Uniform for Sale");
+      copyableText("openUploadsSectionDescription", "Please enter the required information and we will email you with instructions for payment and collection.");
+      copyableText("closeUploadsSectionTitle", "Uniform Uploads are now closed");
+      copyableText("closeUploadsSectionDescription", "Please look out for announcements via class reps for future sales. Submitting this form will have no effect.");
     }
   </script>
 </head>
@@ -51,14 +49,14 @@
       <ol>
         <li>Go to <a href="https://docs.google.com/forms/d/1DBA_6RZH7WwNoQI5FHu8G9lzAnZht568psRsdX6muZg/edit">edit sales form</a></li>
         <li>Delete the first section, which should have title "Uniform Sales are now closed".</li>
-        <li>Ensure the title of the remaining section is "<span id="openSalesSectionTitle"></span>" and the description is "<span id="openSalesSectionDescription"></span>"</li>
+        <li>Ensure the title of the remaining section is "<span id="openSalesSectionTitle"></span>" and the description is "<span id="openSalesSectionDescription"></span>".</li>
       </ol>
     </li>
     <li>
       <h3>Close sales</h3>
       <ol>
         <li>Go to <a href="https://docs.google.com/forms/d/1DBA_6RZH7WwNoQI5FHu8G9lzAnZht568psRsdX6muZg/edit">edit sales form</a></li>
-        <li>Create a new section at the top of the page with title "Uniform Sales are now closed" and description "Please look out for announcements via class reps for future sales. Submitting this form will have no effect"</li>
+        <li>Create a new section at the top of the page with title "<span id="closeSalesSectionTitle"></span>" and description "<span id="closeSalesSectionDescription"></span>".</li>
         <li>Change the action for the new section to "Submit form"</li>
       </ol>
     </li>
@@ -67,14 +65,14 @@
       <ol>
         <li>Go to <a href="https://docs.google.com/forms/d/1qy9xs3yilA-qoVZb9p2gkmLavbmFxyjkaQ8PwmRBrGU/edit">edit upload form</a></li>
         <li>Delete the first section, which should have title "Uniform Uploads are now closed".</li>
-        <li>Ensure the title of the remaining section is "Add New Uniform for Sale" and the description is "Please enter the required information and we will email you with instructions for payment and collection."</li>
+        <li>Ensure the title of the remaining section is "<span id="openUploadsSectionTitle"></span>" and the description is "<span id="openUploadsSectionDescription"></span>".</li>
       </ol>
     </li>
     <li>
       <h3>Close for new uploads</h3>
       <ol>
         <li>Go to <a href="https://docs.google.com/forms/d/1qy9xs3yilA-qoVZb9p2gkmLavbmFxyjkaQ8PwmRBrGU/edit">edit upload form</a></li>
-        <li>Create a new section at the top of the page with title "Uniform Uploads are now closed" and description "Please look out for announcements via class reps for future sales. Submitting this form will have no effect".</li>
+        <li>Create a new section at the top of the page with title "<span id="closeUploadsSectionTitle"></span>" and description "<span id="closeUploadsSectionDescription"></span>".</li>
         <li>Change the action for the new section to "Submit form"</li>
       </ol>
     </li>
